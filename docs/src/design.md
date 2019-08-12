@@ -8,16 +8,32 @@ struct Event <: AbstractEvent
     new(BaseEvent(env))
   end
 end
-mutable struct BaseEvent
+mutable struct BaseEvent    # used to track with EventKey.id
   env :: Environment        #event must be in an environment
   id :: UInt
-  callbacks :: Vector{Function}
+  callbacks :: Vector{Function}   #will run when the event is invoked
   state :: EVENT_STATE
-  value :: Any
+  value :: Any              # contain data
   function BaseEvent(env::Environment)
     new(env, env.eid+=one(UInt), Vector{Function}(), idle, nothing)
   end
 end
+
+Every event is tracked using EventKey in Env,
+struct EventKey
+  time :: Float64
+  priority :: Int
+  id :: UInt
+end
+
+## set callback and value
+function my_callback(ev::AbstractEvent)
+  println("Called back from ", ev)
+end
+ev = Event(sim)
+SimJulia.Event 1
+@callback my_callback(ev)   # set the call back function, 
+
 
 # Process                   
 Process is a time of Event
@@ -52,6 +68,18 @@ mutable struct Simulation <: Environment
   function Simulation(initial_time::Number=zero(Float64))
     new(initial_time, DataStructures.PriorityQueue{BaseEvent, EventKey}(), zero(UInt), zero(UInt), nothing)
   end
+end
+
+## How event runs
+
+function schedule(ev::AbstractEvent, delay::Number=zero(Float64); priority::Int=0, value::Any=nothing)
+  state(ev) == processed && throw(EventProcessed(ev))
+  env = environment(ev)
+  bev = ev.bev
+  bev.value = value
+  env.heap[bev] = EventKey(now(env) + delay, priority, env.sid+=one(UInt))
+  bev.state = scheduled
+  ev
 end
 
 
