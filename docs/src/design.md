@@ -31,7 +31,7 @@ function my_callback(ev::AbstractEvent)
   println("Called back from ", ev)
 end
 ev = Event(sim)
-SimJulia.Event 1
+SimHPC.Event 1
 @callback my_callback(ev)   # set the call back function, 
 
 
@@ -90,8 +90,8 @@ The behavior of the Agent is modeled by Processes are described by @resumable fu
     create they create events and @yield them in order to wait for them to be triggered.
 end
 
-When a process yields an event, the process gets suspended. SimJulia resumes the process, when the event occurs (we say that the event is triggered). 
-Multiple processes can wait for the same event. SimJulia resumes them in the same order in which they yielded that event.
+When a process yields an event, the process gets suspended. SimHPC resumes the process, when the event occurs (we say that the event is triggered). 
+Multiple processes can wait for the same event. SimHPC resumes them in the same order in which they yielded that event.
 
 An important event type is the timeout. Events of this type are scheduled after a certain amount of (simulated) time has passed. They allow a process to sleep (or hold its state) for the given time.A timeout and all other events can be created by calling a constructor having the environment as first argument.
 

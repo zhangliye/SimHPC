@@ -1,5 +1,5 @@
 """
-Main module for SimJulia.jl – a discrete event process oriented simulation framework for Julia.
+Main module for SimHPC.jl – a discrete event process oriented simulation framework for Julia.
 """
 module SimHPC
 
