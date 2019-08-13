@@ -1,6 +1,6 @@
 # SimHPC
 
-SimHPC is a discrete-event process-oriented simulation framework supporting high-performance computing written in [Julia](http://julialang.org/) which is based on the discreate simulation package SimJulia [SimJulia](https://github.com/BenLauwens/SimJulia.jl).
+SimHPC is a discrete-event process-oriented simulation framework supporting high-performance computing written in [Julia](http://julialang.org/) which is a branch from the discreate simulation package SimJulia [SimJulia](https://github.com/BenLauwens/SimJulia.jl).
 
 SimHPC aims to support high-performance computing for the simulation, which support distributed and parallel computing on both of single multiple-core machine and clusters.
 
