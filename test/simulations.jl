@@ -9,7 +9,6 @@ end
   @yield interrupt(car_process)
 end
 
-
 @resumable function car(env::Environment, id::Int)
   while true
     println("Car$(id) Start parking at ", now(env))
@@ -42,4 +41,3 @@ end
 
 @time run(sim, 1000)        # start the processes 
 println("Finished SimHPC")
-
