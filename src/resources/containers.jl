@@ -55,3 +55,5 @@ function do_get(con::Container{N}, get_ev::Get, key::ContainerKey{N}) where N<:N
   con.level -= key.amount
   true
 end
+
+function

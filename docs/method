@@ -1,0 +1,70 @@
+abstract type AbstractEvent end
+abstract type Environment end
+@enum EVENT_STATE idle=0 scheduled=1 processed=2
+
+##
+struct EventProcessed <: Exception
+  ev :: AbstractEvent
+end
+
+struct EventNotIdle <: Exception
+  ev :: AbstractEvent
+end
+
+mutable struct BaseEvent
+  env :: Environment
+  id :: UInt
+  callbacks :: Vector{Function}
+  state :: EVENT_STATE
+  value :: Any
+  function BaseEvent(env::Environment)
+    new(env, env.eid+=one(UInt), Vector{Function}(), idle, nothing)
+  end
+end
+
+##
+abstract type ResourceKey end
+abstract type AbstractResource end
+abstract type ResourceEvent <: AbstractEvent end
+
+struct ContainerKey{N<:Number} <: ResourceKey
+  priority :: Int
+  id :: UInt
+  amount :: N
+end
+
+mutable struct Container{N<:Number} <: AbstractResource
+  env :: Environment
+  capacity :: N
+  level :: N     #first in first out, the number of the current scheduled Put
+  seid :: UInt   # total number of Put and Get
+  put_queue :: DataStructures.PriorityQueue{Put, ContainerKey{N}}     # waiting to exe
+  get_queue :: DataStructures.PriorityQueue{Get, ContainerKey{N}}     # waiting to exe
+  function Container{N}(env::Environment, capacity::N=one(N); level::N=zero(N)) where {N<:Number}
+    new(env, capacity, level, zero(UInt), DataStructures.PriorityQueue{Put, ContainerKey{N}}(), DataStructures.PriorityQueue{Get, ContainerKey{N}}())
+  end
+end
+
+function do_put(con::Container{N}, put_ev::Put, key::ContainerKey{N}) where N<:Number
+  con.level + key.amount > con.capacity && return false
+  schedule(put_ev)
+  con.level += key.amount
+  true
+end
+
+const Resource = Container{Int}
+
+##
+struct Put <: ResourceEvent
+  bev :: BaseEvent
+  function Put(env::Environment)
+    new(BaseEvent(env))
+  end
+end
+
+struct Get <: ResourceEvent
+  bev :: BaseEvent
+  function Get(env::Environment)
+    new(BaseEvent(env))
+  end
+end
